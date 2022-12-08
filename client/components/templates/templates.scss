@@ -1,0 +1,27 @@
+@import '../../styles/variables.scss';
+
+.btn {
+   height: 37px;
+   border-radius: 5px;
+   transition: 0.3s;
+   &-accent {
+      background: $accentBtn;
+      color: #fff;
+      &:hover {
+         background: $accentBtnHover;
+      }
+   }
+   &-lined {
+      border: 1px solid $accentBtn;
+      color: $accentBtn;
+      &:hover {
+         border-color: $accentBtnHover;
+         color: $accentBtnHover;
+      }
+   }
+   &-shadow {
+      box-shadow: 0px 0px 4px 1px rgba(168, 168, 168, 0.4);
+      border-radius: 20px;
+      color: $accentBtn;
+   }
+}

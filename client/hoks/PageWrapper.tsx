@@ -13,7 +13,7 @@ const PageWrapper: FC<Props> = ({ children, title }) => {
             <title>{title ?? 'Prepise'}</title>
             <link rel="icon" href="/favicon.ico" />
          </Head>
-         <main>{children}</main>
+         {children}
       </>
    );
 };

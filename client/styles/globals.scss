@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import './imports.scss';
+@import './variables.scss';
+
+// styles
+
+body {
+   background: #f7f8fa;
+   font-family: 'Montserrat', sans-serif;
+}
+
+.ant-layout,
+.ant-layout-header,
+.ant-layout-content,
+.ant-layout-footer {
+   background: $mainbackground !important;
+}
