@@ -7,3 +7,15 @@
    display: flex;
    align-items: center;
 }
+
+.search-input {
+   background: #fff;
+   width: 700px;
+   border-color: $placeholderColor;
+   input {
+      border-radius: 5px 0 0 5px;
+      &::placeholder {
+         color: $placeholderColor;
+      }
+   }
+}
