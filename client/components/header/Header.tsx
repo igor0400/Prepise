@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import { Layout } from 'antd';
 import Image from 'next/image';
-import Button, { Themes } from '../templates/Button';
+import Button, { Themes } from '../uikit/button/Button';
 
 import logo from '../../public/logo100x56.svg';
 import plus from '../../public/icons/plus_.svg';
@@ -31,11 +31,11 @@ const Header: FC = () => {
                onBlur={() => setInputFocus(false)}
             />
             <Image
-               className="mr-2.5 my-1.5 cursor-pointer"
+               className="mr-2.5 my-1 cursor-pointer"
                src={search}
                alt="search"
-               width={25}
-               height={25}
+               width={27}
+               height={27}
             />
          </div>
          <div className="btns grow flex justify-end gap-3.5">

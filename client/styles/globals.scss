@@ -7,9 +7,13 @@
 
 // styles
 
-body {
-   background: #f7f8fa;
+* {
    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+   background: $mainbackground;
+   overflow: scroll;
 }
 
 input {
@@ -20,5 +24,17 @@ input {
 .ant-layout-header,
 .ant-layout-content,
 .ant-layout-footer {
-   background: $mainbackground !important;
+   background: none;
+}
+
+::-webkit-scrollbar {
+   height: 100%;
+   width: 10px;
+}
+::-webkit-scrollbar-track {
+   background: $mainbackground;
+}
+::-webkit-scrollbar-thumb {
+   border-radius: 5px;
+   background: #1ba52241;
 }

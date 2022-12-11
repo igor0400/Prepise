@@ -1,0 +1,37 @@
+.home-wrapper {
+   position: relative;
+   height: calc(100vh - 80px);
+}
+
+.title {
+   height: 100%;
+   padding-top: 20vh;
+}
+
+.gradient-btn {
+   display: flex;
+   justify-content: center;
+   background: #fff;
+   max-width: 250px;
+   padding: 10px 50px;
+   margin: 60px auto 0;
+   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+   border-radius: 10px;
+   p {
+      background: linear-gradient(
+         90deg,
+         #1dab1c 0%,
+         rgba(0, 148, 255, 0.8) 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      font-size: 24px;
+      padding-right: 5px;
+   }
+   img {
+      padding-top: 2px;
+      margin: auto 0;
+   }
+}
