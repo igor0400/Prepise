@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { Layout } from 'antd';
 import Image from 'next/image';
 import Button, { Themes } from '../uikit/button/Button';
+import Link from 'next/link';
 
 import logo from '../../public/logo100x56.svg';
 import plus from '../../public/icons/plus_.svg';
@@ -16,7 +17,10 @@ const Header: FC = () => {
 
    return (
       <AntHeader className="header flex justify-between">
-         <Image src={logo} alt="logo" width={100} height={56} />
+         <Link href="/">
+            <Image src={logo} alt="logo" width={100} height={56} />
+         </Link>
+
          <div
             className={classNames(
                'search-input flex justify-between rounded-md ml-10',
@@ -49,8 +53,12 @@ const Header: FC = () => {
                />
                Опубликовать
             </Button>
-            <Button>Войти</Button>
-            <Button theme={Themes.LINED}>Регистрация</Button>
+            <Link href="/login">
+               <Button>Войти</Button>
+            </Link>
+            <Link href="/register">
+               <Button theme={Themes.LINED}>Регистрация</Button>
+            </Link>
          </div>
       </AntHeader>
    );

@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <>
          <Layout>
             <Header />
-            <Content style={{ marginTop: '80px' }}>
+            <Content>
                <Component {...pageProps} />
             </Content>
          </Layout>

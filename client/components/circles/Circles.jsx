@@ -134,7 +134,7 @@ const Circles = () => {
       ];
 
       for (let i = 0; i < 10; i++) {
-         const orb = new Orb(colors[Math.floor(Math.random(0, 11) * 10)]);
+         const orb = new Orb(colors[Math.floor(Math.random(0, colors.length) * 10)]);
 
          app.stage.addChild(orb.graphics);
 
