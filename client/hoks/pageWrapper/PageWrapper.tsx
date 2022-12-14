@@ -16,7 +16,9 @@ const PageWrapper: FC<Props> = ({ children, title, nopadding }) => {
             <link rel="icon" href="/favicon.ico" />
          </Head>
          <div
-            className={classNames('content-wrapper', { padding: !nopadding })}
+            className={classNames('content-wrapper', {
+               'padding-50': !nopadding,
+            })}
          >
             {children}
          </div>

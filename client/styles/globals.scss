@@ -20,6 +20,10 @@ input {
    outline: none;
 }
 
+li {
+   list-style-type: none;
+}
+
 .ant-layout,
 .ant-layout-header,
 .ant-layout-content,
