@@ -10,7 +10,7 @@ const ShadowCard: FC<Props> = ({ children, type }) => {
    return (
       <div
          className={classNames(
-            'drop-shadow-lg text-lg font-medium p-6 bg-white rounded-lg',
+            'drop-shadow-md text-lg font-medium p-6 bg-white rounded-lg',
             {
                'text-center font-bold': type === 'descr',
             }

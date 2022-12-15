@@ -103,7 +103,7 @@ const Cards: FC = () => {
    return (
       <div className="cards padding-50 max-w-6xl mx-auto my-14">
          {cardsArr.map((item: changedSettingsType, i: number) => (
-            <div key={i} className="my-12">
+            <div key={i} className="my-14">
                <h2 className="text-3xl font-bold text-center pb-6">
                   {item.title}
                </h2>
