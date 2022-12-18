@@ -3,12 +3,12 @@ import classNames from 'classnames';
 
 import { Layout } from 'antd';
 import Image from 'next/image';
-import Button, { Themes } from '../uikit/button/Button';
+import Button, { Themes } from '../../uikit/button/Button';
 import Link from 'next/link';
 
-import logo from '../../public/logo100x56.svg';
-import plus from '../../public/icons/plus_.svg';
-import search from '../../public/icons/search.svg';
+import logo from '../../../public/logo100x56.svg';
+import plus from '../../../public/icons/plus_.svg';
+import search from '../../../public/icons/search.svg';
 
 const { Header: AntHeader } = Layout;
 

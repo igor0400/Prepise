@@ -1,12 +1,13 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import PageWrapper from '../hoks/pageWrapper/PageWrapper';
 import Link from 'next/link';
+
+import PageWrapper from '../src/hoks/pageWrapper/PageWrapper';
+import CirclesWrapper from '../src/hoks/circlesWrapper/CirclesWrapper';
 
 import logo from '../public/logo300x168.svg';
 import arrow from '../public/icons/arrow-right.svg';
-import CirclesWrapper from '../hoks/circlesWrapper/CirclesWrapper';
-import Cards from '../components/main/cards/Cards';
+import Cards from '../src/components/main/cards/Cards';
 
 const Home: NextPage = () => {
    return (

@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
-import CirclesWrapper from '../hoks/circlesWrapper/CirclesWrapper';
-import PageWrapper from '../hoks/pageWrapper/PageWrapper';
+import CirclesWrapper from '../src/hoks/circlesWrapper/CirclesWrapper';
+import PageWrapper from '../src/hoks/pageWrapper/PageWrapper';
 
 const Login: NextPage = () => {
    return (

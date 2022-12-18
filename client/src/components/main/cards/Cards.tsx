@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import React, { FC, useEffect, useState } from 'react';
-import ShadowCard from '../../uikit/shadowCard/ShadowCard';
+import ShadowCard from '../../../uikit/shadowCard/ShadowCard';
 
 type settingsType = {
    title: string;
@@ -92,9 +92,7 @@ const Cards: FC = () => {
             });
          });
 
-         const returnedObj: changedSettingsType = { ...item, list: newList };
-
-         allCards.push(returnedObj);
+         allCards.push({ ...item, list: newList });
       });
 
       setCardsArr(allCards);

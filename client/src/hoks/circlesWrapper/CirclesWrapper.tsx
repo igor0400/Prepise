@@ -1,5 +1,5 @@
 import { FC, ReactNode } from 'react';
-import Circles from '../../components/circles/Circles';
+import Circles from '../../../src/components/circles/Circles';
 
 interface Props {
    children: ReactNode;
