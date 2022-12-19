@@ -2,24 +2,24 @@ import Link from 'next/link';
 import React, { FC, useEffect, useState } from 'react';
 import ShadowCard from '../../../uikit/shadowCard/ShadowCard';
 
-type settingsType = {
+type Settings = {
    title: string;
    descr: string;
    list: string[];
 };
 
-interface newListType {
+interface NewList {
    strings: string[];
    links: { link: string; text: string }[] | null;
 }
 
-type changedSettingsType = {
+type ChangedSettings = {
    title: string;
    descr: string;
-   list: newListType[];
+   list: NewList[];
 };
 
-const settings: settingsType[] = [
+const settings: Settings[] = [
    {
       title: 'Подготовка',
       descr: 'Вы можете удобно подготовиться к собеседованию, на основании опыта других пользователей.',
@@ -63,13 +63,13 @@ const settings: settingsType[] = [
 ];
 
 const Cards: FC = () => {
-   const [cardsArr, setCardsArr] = useState<changedSettingsType[]>([]);
+   const [cardsArr, setCardsArr] = useState<ChangedSettings[]>([]);
 
    useEffect(() => {
-      const allCards: changedSettingsType[] = [];
+      const allCards: ChangedSettings[] = [];
 
-      settings.forEach((item: settingsType) => {
-         const newList: newListType[] = [];
+      settings.forEach((item: Settings) => {
+         const newList: NewList[] = [];
 
          item.list.forEach((listItem: string) => {
             const regexp = /##[^ ]+\.[^ ]+##/gi;
@@ -100,14 +100,14 @@ const Cards: FC = () => {
 
    return (
       <div className="cards padding-50 max-w-6xl mx-auto my-14">
-         {cardsArr.map((item: changedSettingsType, i: number) => (
+         {cardsArr.map((item: ChangedSettings, i: number) => (
             <div key={i} className="my-14">
                <h2 className="text-3xl font-bold text-center pb-6">
                   {item.title}
                </h2>
                <ShadowCard type="descr">{item.descr}</ShadowCard>
                <div className="pt-5 grid grid-cols-2 gap-4">
-                  {item.list.map((listItem: newListType, listItemI: number) => (
+                  {item.list.map((listItem: NewList, listItemI: number) => (
                      <ShadowCard type="list-item" key={listItemI}>
                         <span className="font-bold"> {listItemI + 1}.</span>{' '}
                         {listItem.strings.map(
