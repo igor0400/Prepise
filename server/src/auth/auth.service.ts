@@ -17,49 +17,56 @@ export class AuthService {
     private tokensService: TokensService,
   ) {}
 
-  //   async register(
-  //     registerRequest: RegisterRequest,
-  //     response: Response,
-  //     request: Request,
-  //   ) {
-  //     const user_ip = request.ip;
-  //     const user_agent = loginRequest.userAgent;
-  //     const userPassword = loginRequest.password;
+    async register(
+      registerRequest: RegisterRequest,
+      response: Response,
+      request: Request,
+    ) {
+      const userIp = request.ip;
+      const userAgent = request.headers['user-agent'];
 
-  //     const user = await this.userService.getUserByEmail(loginRequest.nickname);
-  //     const valid = user ? await compare(userPassword, user.HASH) : false;
+      const user = await this.userService.getUserByEmail(registerRequest.email);
 
-  //     if (!valid) {
-  //       throw new UnauthorizedException('Неверный пароль');
-  //     }
+      if (user) {
+        const valid = await compare(registerRequest.password, user.password);
 
-  //     const userSession = await UserSession.findOne({
-  //       where: {
-  //         userId: user.UUID,
-  //         userIp,
-  //         userAgent,
-  //       },
-  //       include: { all: true },
-  //     });
+        if (!valid) {
+          throw new UnauthorizedException('Неверный пароль');
+        }
 
-  //     const accessToken = await this.tokensService.generateAccessToken(user);
-  //     const refreshToken = await this.tokensService.generateRefreshToken(
-  //       userSession,
-  //       user,
-  //       { user_ip, user_agent },
-  //       refreshTokenTime,
-  //     );
+        const userSession = await UserSession.findOne({
+          where: {
+            userId: user.id,
+            userIp,
+            userAgent,
+          },
+          include: { all: true },
+        });
 
-  //     response.cookie('refreshToken', refreshToken, {
-  //       maxAge: refreshTokenTimeCookie,
-  //       httpOnly: true,
-  //     });
+        const accessToken = await this.tokensService.generateAccessToken(user);
+        const refreshToken = await this.tokensService.generateRefreshToken(
+          userSession,
+          user,
+          { userIp, userAgent },
+          refreshTokenTime,
+        );
 
-  //     return {
-  //       user,
-  //       accessToken,
-  //     };
-  //   }
+        response.cookie('refreshToken', refreshToken, {
+          maxAge: refreshTokenTimeCookie,
+          httpOnly: true,
+        });
+
+        const currentUser = await this.userService.getUserByEmail(
+          registerRequest.email,
+        );
+        return {
+          user: currentUser,
+          accessToken,
+        };
+      }
+
+      throw new UnauthorizedException('Пользователь с таким email не найден');
+    }
 
   async login(
     loginRequest: LoginRequest,
@@ -67,13 +74,12 @@ export class AuthService {
     request: Request,
   ) {
     const userIp = request.ip;
-    const userAgent = loginRequest.userAgent;
-    const userPassword = loginRequest.password;
+    const userAgent = request.headers['user-agent'];
 
     const user = await this.userService.getUserByEmail(loginRequest.email);
 
     if (user) {
-      const valid = await compare(userPassword, user.password);
+      const valid = await compare(loginRequest.password, user.password);
 
       if (!valid) {
         throw new UnauthorizedException('Неверный пароль');
@@ -101,8 +107,11 @@ export class AuthService {
         httpOnly: true,
       });
 
+      const currentUser = await this.userService.getUserByEmail(
+        loginRequest.email,
+      );
       return {
-        user,
+        user: currentUser,
         accessToken,
       };
     }
@@ -110,11 +119,11 @@ export class AuthService {
     throw new UnauthorizedException('Пользователь с таким email не найден');
   }
 
-  async refresh(request: Request, response: Response, userAgent: string) {
+  async refresh(request: Request, response: Response) {
     const { user, accessToken, refreshToken } =
       await this.tokensService.createTokensFromRefreshToken(
         request.cookies.refreshToken,
-        userAgent,
+        request.headers['user-agent'],
         request.ip,
       );
 

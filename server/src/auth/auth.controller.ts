@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, Req } from '@nestjs/common';
+import { Body, Controller, Post, Get, Res, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginRequest, RegisterRequest } from './requests';
 import { Response, Request } from 'express';
@@ -7,14 +7,14 @@ import { Response, Request } from 'express';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-//   @Post('/register')
-//   public async register(
-//     @Body() registerRequest: RegisterRequest,
-//     @Res({ passthrough: true }) response: Response,
-//     @Req() request: Request,
-//   ) {
-//     return this.authService.register(registerRequest, response, request);
-//   }
+  //   @Post('/register')
+  //   public async register(
+  //     @Body() registerRequest: RegisterRequest,
+  //     @Res({ passthrough: true }) response: Response,
+  //     @Req() request: Request,
+  //   ) {
+  //     return this.authService.register(registerRequest, response, request);
+  //   }
 
   @Post('/login')
   public async login(
@@ -25,12 +25,14 @@ export class AuthController {
     return this.authService.login(loginRequest, response, request);
   }
 
-  @Post('/refresh')
+  @Get('/refresh')
   public async refresh(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
-    @Body('userAgent') userAgent: string,
   ) {
-    return this.authService.refresh(request, response, userAgent);
+    return this.authService.refresh(request, response);
   }
 }
+
+// СДЕЛАТЬ REGISTER, REFRESH И ПОЧИСТИТЬ TOKENS.SERVICE
+// СДЕЛАТЬ GUARDS AUTH И ROLES

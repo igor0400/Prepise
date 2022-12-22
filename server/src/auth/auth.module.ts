@@ -8,11 +8,15 @@ import { TokensService } from './tokens.service';
 import { User } from '../users/models/user.model';
 import { UserSession } from 'src/sessions/models/user-session.model';
 import { SessionsModule } from 'src/sessions/sessions.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService, TokensService],
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: `.${process.env.NODE_ENV}.env`,
+    }),
     forwardRef(() => UsersModule),
     SessionsModule,
     JwtModule.register({

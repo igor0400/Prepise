@@ -6,12 +6,6 @@ export class LoginRequest {
 
   @IsNotEmpty({ message: 'Поле password обязательно' })
   readonly password: string;
-
-  @IsNotEmpty({ message: 'Поле userIp обязательно' })
-  readonly userIp: string;
-
-  @IsNotEmpty({ message: 'Поле userAgent обязательно' })
-  readonly userAgent: string;
 }
 
 export class RegisterRequest {
@@ -29,15 +23,4 @@ export class RegisterRequest {
 
   @IsNotEmpty({ message: 'Поле gender обязательно' })
   readonly gender: 'male' | 'female';
-
-  @IsNotEmpty({ message: 'Поле userIp обязательно' })
-  readonly userIp: string;
-
-  @IsNotEmpty({ message: 'Поле userAgent обязательно' })
-  readonly userAgent: string;
-}
-
-export class RefreshRequest {
-  @IsNotEmpty({ message: 'The refresh token is required' })
-  readonly refresh_token: string;
 }

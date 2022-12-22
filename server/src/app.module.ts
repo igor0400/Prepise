@@ -17,7 +17,10 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: `.${process.env.NODE_ENV}.env` }),
+    ConfigModule.forRoot({
+      envFilePath: `.${process.env.NODE_ENV}.env`,
+      isGlobal: true,
+    }),
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, '../static'),
     }),
@@ -34,7 +37,7 @@ import { AuthModule } from './auth/auth.module';
     RolesModule,
     SessionsModule,
     BannedModule,
-    AuthModule
+    AuthModule,
   ],
   controllers: [SessionsController],
 })
