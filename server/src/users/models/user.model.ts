@@ -1,10 +1,22 @@
-import { Column, Model, Table, DataType, HasMany } from 'sequelize-typescript';
-import { UserSession } from './user-session.model';
+import {
+  Column,
+  Model,
+  Table,
+  DataType,
+  HasMany,
+  BelongsToMany,
+  HasOne,
+} from 'sequelize-typescript';
+import { BanUser } from 'src/banned/models/banned-users.model';
+import { Role } from 'src/roles/models/roles.model';
+import { UserRoles } from 'src/roles/models/user-roles.model';
+import { UserSession } from '../../sessions/models/user-session.model';
 
 interface UserCreationArgs {
   name: string;
+  password: string;
   email: string;
-  email_verify: boolean;
+  emailVerify: boolean;
   gender: 'male' | 'female';
   avatar: string;
 }
@@ -29,12 +41,20 @@ export class User extends Model<User, UserCreationArgs> {
     type: DataType.STRING,
     allowNull: false,
   })
+  password: string;
+
+  @Column({
+    type: DataType.STRING,
+    unique: true,
+    allowNull: false,
+  })
   email: string;
 
   @Column({
     type: DataType.BOOLEAN,
+    defaultValue: false,
   })
-  email_verify: boolean;
+  emailVerify: boolean;
 
   @Column({
     type: DataType.STRING,
@@ -49,16 +69,19 @@ export class User extends Model<User, UserCreationArgs> {
 
   @Column({
     type: DataType.INTEGER,
+    defaultValue: 0,
   })
   followers: number;
 
   @Column({
     type: DataType.INTEGER,
+    defaultValue: 0,
   })
   likes: number;
 
   @Column({
     type: DataType.INTEGER,
+    defaultValue: 0,
   })
   dislikes: number;
 
@@ -75,4 +98,10 @@ export class User extends Model<User, UserCreationArgs> {
 
   @HasMany(() => UserSession)
   sessions: UserSession[];
+
+  @BelongsToMany(() => Role, () => UserRoles)
+  roles: Role[];
+
+  @HasOne(() => BanUser)
+  banned: BanUser;
 }

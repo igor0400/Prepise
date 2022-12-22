@@ -6,12 +6,12 @@ import {
   ForeignKey,
   BelongsTo,
 } from 'sequelize-typescript';
-import { User } from './user.model';
+import { User } from '../../users/models/user.model';
 
 interface UserSessionCreationArgs {
-  user_id: number;
-  user_ip: string;
-  user_agent: string;
+  userId: number;
+  userIp: string;
+  userAgent: string;
 }
 
 @Table({ tableName: 'USERS_SESSIONS' })
@@ -29,20 +29,23 @@ export class UserSession extends Model<UserSession, UserSessionCreationArgs> {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  user_id: number;
+  userId: number;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  userIp: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  userAgent: string;
+
+  @Column({ type: DataType.DATE, allowNull: false })
+  expires: Date;
 
   @BelongsTo(() => User)
   user: User;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  user_ip: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  user_agent: string;
 }
