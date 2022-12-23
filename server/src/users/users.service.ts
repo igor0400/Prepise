@@ -59,7 +59,20 @@ export class UsersService {
       where: { id },
       include: { all: true },
     });
+
     return user;
+  }
+
+  async deleteUserById(id: number) {
+    const isDelete = await this.userRepository.destroy({
+      where: { id },
+    });
+
+    if (isDelete) {
+      return `Пользователь с id: ${id} удален`;
+    } else {
+      return `Пользователь с id: ${id} не найден`;
+    }
   }
 
   async addRole(dto: AddRoleDto) {
