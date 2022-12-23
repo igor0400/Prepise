@@ -17,56 +17,46 @@ export class AuthService {
     private tokensService: TokensService,
   ) {}
 
-    async register(
-      registerRequest: RegisterRequest,
-      response: Response,
-      request: Request,
-    ) {
-      const userIp = request.ip;
-      const userAgent = request.headers['user-agent'];
+  async register(
+    registerRequest: RegisterRequest,
+    response: Response,
+    request: Request,
+  ) {
+    const userIp = request.ip;
+    const userAgent = request.headers['user-agent'];
 
-      const user = await this.userService.getUserByEmail(registerRequest.email);
+    const isUserCreated = await this.userService.getUserByEmail(
+      registerRequest.email,
+    );
 
-      if (user) {
-        const valid = await compare(registerRequest.password, user.password);
-
-        if (!valid) {
-          throw new UnauthorizedException('Неверный пароль');
-        }
-
-        const userSession = await UserSession.findOne({
-          where: {
-            userId: user.id,
-            userIp,
-            userAgent,
-          },
-          include: { all: true },
-        });
-
-        const accessToken = await this.tokensService.generateAccessToken(user);
-        const refreshToken = await this.tokensService.generateRefreshToken(
-          userSession,
-          user,
-          { userIp, userAgent },
-          refreshTokenTime,
-        );
-
-        response.cookie('refreshToken', refreshToken, {
-          maxAge: refreshTokenTimeCookie,
-          httpOnly: true,
-        });
-
-        const currentUser = await this.userService.getUserByEmail(
-          registerRequest.email,
-        );
-        return {
-          user: currentUser,
-          accessToken,
-        };
-      }
-
-      throw new UnauthorizedException('Пользователь с таким email не найден');
+    if (isUserCreated) {
+      throw new UnauthorizedException('Данный email уже используется');
     }
+
+    const user = await this.userService.createUser(registerRequest);
+
+    const accessToken = await this.tokensService.generateAccessToken(user);
+    const refreshToken = await this.tokensService.generateRefreshToken(
+      undefined,
+      user,
+      { userIp, userAgent },
+      refreshTokenTime,
+    );
+
+    response.cookie('refreshToken', refreshToken, {
+      maxAge: refreshTokenTimeCookie,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    const currentUser = await this.userService.getUserByEmail(
+      registerRequest.email,
+    );
+    return {
+      user: currentUser,
+      accessToken,
+    };
+  }
 
   async login(
     loginRequest: LoginRequest,
@@ -105,6 +95,7 @@ export class AuthService {
       response.cookie('refreshToken', refreshToken, {
         maxAge: refreshTokenTimeCookie,
         httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
       });
 
       const currentUser = await this.userService.getUserByEmail(
@@ -120,6 +111,7 @@ export class AuthService {
   }
 
   async refresh(request: Request, response: Response) {
+    console.log(request.cookies);
     const { user, accessToken, refreshToken } =
       await this.tokensService.createTokensFromRefreshToken(
         request.cookies.refreshToken,
@@ -130,6 +122,7 @@ export class AuthService {
     response.cookie('refreshToken', refreshToken, {
       maxAge: refreshTokenTimeCookie,
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
     });
 
     return {

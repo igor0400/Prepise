@@ -7,14 +7,14 @@ import { Response, Request } from 'express';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  //   @Post('/register')
-  //   public async register(
-  //     @Body() registerRequest: RegisterRequest,
-  //     @Res({ passthrough: true }) response: Response,
-  //     @Req() request: Request,
-  //   ) {
-  //     return this.authService.register(registerRequest, response, request);
-  //   }
+  @Post('/register')
+  public async register(
+    @Body() registerRequest: RegisterRequest,
+    @Res({ passthrough: true }) response: Response,
+    @Req() request: Request,
+  ) {
+    return this.authService.register(registerRequest, response, request);
+  }
 
   @Post('/login')
   public async login(
@@ -34,5 +34,4 @@ export class AuthController {
   }
 }
 
-// СДЕЛАТЬ REGISTER, REFRESH И ПОЧИСТИТЬ TOKENS.SERVICE
 // СДЕЛАТЬ GUARDS AUTH И ROLES

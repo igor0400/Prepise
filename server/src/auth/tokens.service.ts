@@ -11,7 +11,7 @@ import { v4 } from 'uuid';
 import { User } from 'src/users/models/user.model';
 import { InjectModel } from '@nestjs/sequelize';
 
-export interface UserSessionPayload {
+export interface RefreshTokenPayload {
   jti: string;
   sub: string;
   userIp: string;
@@ -110,14 +110,14 @@ export class TokensService {
   public async resolveUserSession(
     encoded: string,
   ): Promise<{ user: User; token: UserSession }> {
-    const payload = await this.decodeUserSession(encoded);
-    const token = await this.getStoredTokenFromUserSessionPayload(payload);
+    const payload = await this.decodeRefreshToken(encoded);
+    const token = await this.getStoredTokenFromRefreshTokenPayload(payload);
 
     if (!token) {
       throw new UnprocessableEntityException('Refresh token not found');
     }
 
-    const user = await this.getUserFromUserSessionPayload(payload);
+    const user = await this.getUserFromRefreshTokenPayload(payload);
 
     if (!user) {
       throw new UnprocessableEntityException('Refresh token malformed');
@@ -165,7 +165,9 @@ export class TokensService {
     return { user, accessToken, refreshToken };
   }
 
-  private async decodeUserSession(token: string): Promise<UserSessionPayload> {
+  private async decodeRefreshToken(
+    token: string,
+  ): Promise<RefreshTokenPayload> {
     try {
       return this.jwt.verifyAsync(token);
     } catch (e) {
@@ -177,8 +179,8 @@ export class TokensService {
     }
   }
 
-  private async getUserFromUserSessionPayload(
-    payload: UserSessionPayload,
+  private async getUserFromRefreshTokenPayload(
+    payload: RefreshTokenPayload,
   ): Promise<User> {
     const subId = payload.sub;
 
@@ -189,8 +191,8 @@ export class TokensService {
     return this.users.getUserById(+subId);
   }
 
-  private async getStoredTokenFromUserSessionPayload(
-    payload: UserSessionPayload,
+  private async getStoredTokenFromRefreshTokenPayload(
+    payload: RefreshTokenPayload,
   ): Promise<UserSession | null> {
     const tokenId = payload.jti;
 

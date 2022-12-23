@@ -15,8 +15,8 @@ export class RegisterRequest {
   @IsNotEmpty({ message: 'Поле email обязательно' })
   readonly email: string;
 
-  @IsNotEmpty({ message: 'Поле email_verify обязательно' })
-  readonly email_verify: boolean;
+  @IsNotEmpty({ message: 'Поле emailVerify обязательно' })
+  readonly emailVerify: boolean;
 
   @IsNotEmpty({ message: 'Поле password обязательно' })
   readonly password: string;
