@@ -6,11 +6,8 @@ import { hash } from 'bcryptjs';
 import { AddRoleDto } from './dto/add-role.dto';
 import { RolesService } from 'src/roles/roles.service';
 import { UserRoles } from 'src/roles/models/user-roles.model';
-
-const defaultAvatars = {
-  male: ['efron.png'],
-  female: ['camilla.png'],
-};
+import { CreateUserInfoDto } from './dto/create-user-info.dto';
+import { UserInfo } from './models/users-info.model';
 
 function getRandomNum(max: number): number {
   return Math.floor(Math.random() * max);
@@ -23,26 +20,42 @@ export class UsersService {
     private userRepository: typeof User,
     @InjectModel(UserRoles)
     private userRolesRepository: typeof UserRoles,
+    @InjectModel(UserInfo)
+    private userInfoRepository: typeof UserInfo,
     private roleService: RolesService,
   ) {}
+
+  private readonly defaultAvatars = {
+    male: ['efron.png'],
+    female: ['camilla.png'],
+  };
 
   async getAllUsers() {
     const users = await this.userRepository.findAll({ include: { all: true } });
     return users;
   }
 
-  async createUser(dto: CreateUserDto) {
-    const password = await hash(dto.password, 10);
-    const avatar =
-      dto.gender === 'male'
-        ? defaultAvatars.male[getRandomNum(defaultAvatars.male.length)]
-        : defaultAvatars.female[getRandomNum(defaultAvatars.female.length)];
+  async createUser(userDto: CreateUserDto) {
+    const password = await hash(userDto.password, 10);
 
     const user = await this.userRepository.create({
-      ...dto,
-      avatar: `/avatars/default/${dto.gender}/${avatar}`,
+      ...userDto,
+      avatar: userDto.gender
+        ? this.getAvatar('user', userDto.gender)
+        : this.getAvatar('company'),
       password,
     });
+
+    if (userDto.gender) {
+      await this.addRole({ value: 'USER', userId: user.id });
+      await this.userInfoRepository.create({
+        userId: user.id,
+        gender: userDto.gender,
+      });
+    } else {
+      await this.addRole({ value: 'COMPANY', userId: user.id });
+    }
+
     return user;
   }
 
@@ -71,7 +84,10 @@ export class UsersService {
     if (isDelete) {
       return `Пользователь с id: ${id} удален`;
     } else {
-      return `Пользователь с id: ${id} не найден`;
+      throw new HttpException(
+        `Пользователь с id: ${id} не найден`,
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 
@@ -92,5 +108,28 @@ export class UsersService {
       'Пользователь или роль не найдены',
       HttpStatus.NOT_FOUND,
     );
+  }
+
+  private getAvatar(
+    userType: 'company' | 'user',
+    gender: 'male' | 'female' = undefined,
+  ) {
+    if (userType === 'company') {
+      return '/avatars/default/companies/main.png';
+    } else {
+      if (gender === 'male') {
+        return `/avatars/default/users/${gender}/${
+          this.defaultAvatars.male[
+            getRandomNum(this.defaultAvatars.male.length)
+          ]
+        }`;
+      } else if (gender === 'female') {
+        return `/avatars/default/users/${gender}/${
+          this.defaultAvatars.female[
+            getRandomNum(this.defaultAvatars.female.length)
+          ]
+        }`;
+      }
+    }
   }
 }

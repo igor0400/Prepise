@@ -3,5 +3,5 @@ export class CreateUserDto {
   readonly password: string;
   readonly email: string;
   readonly emailVerify: boolean;
-  readonly gender: 'male' | 'female';
+  readonly gender?: 'female' | 'male';
 }

@@ -11,13 +11,13 @@ import { BanUser } from 'src/banned/models/banned-users.model';
 import { Role } from 'src/roles/models/roles.model';
 import { UserRoles } from 'src/roles/models/user-roles.model';
 import { UserSession } from '../../sessions/models/user-session.model';
+import { UserInfo } from './users-info.model';
 
 interface UserCreationArgs {
   name: string;
   password: string;
   email: string;
   emailVerify: boolean;
-  gender: 'male' | 'female';
   avatar: string;
 }
 
@@ -90,12 +90,6 @@ export class User extends Model<User, UserCreationArgs> {
   })
   location: string;
 
-  @Column({
-    type: DataType.ENUM('male', 'female'),
-    allowNull: false,
-  })
-  gender: 'male' | 'female';
-
   @HasMany(() => UserSession)
   sessions: UserSession[];
 
@@ -104,4 +98,7 @@ export class User extends Model<User, UserCreationArgs> {
 
   @HasOne(() => BanUser)
   banned: BanUser;
+
+  @HasOne(() => UserInfo)
+  userInfo: UserInfo;
 }

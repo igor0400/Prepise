@@ -14,6 +14,7 @@ import { SessionsModule } from './sessions/sessions.module';
 import { BannedModule } from './banned/banned.module';
 import { BanUser } from './banned/models/banned-users.model';
 import { AuthModule } from './auth/auth.module';
+import { UserInfo } from './users/models/users-info.model';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.MYSQL_USERNAME,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DBNAME,
-      models: [User, UserSession, UserRoles, Role, BanUser],
+      models: [User, UserSession, UserRoles, Role, BanUser, UserInfo],
     }),
     UsersModule,
     RolesModule,

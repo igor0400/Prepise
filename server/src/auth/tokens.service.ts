@@ -114,13 +114,13 @@ export class TokensService {
     const token = await this.getStoredTokenFromRefreshTokenPayload(payload);
 
     if (!token) {
-      throw new UnprocessableEntityException('Refresh token not found');
+      throw new UnprocessableEntityException('Refresh токен не найден');
     }
 
     const user = await this.getUserFromRefreshTokenPayload(payload);
 
     if (!user) {
-      throw new UnprocessableEntityException('Refresh token malformed');
+      throw new UnprocessableEntityException('Refresh токен неверного формате');
     }
 
     return { user, token };
@@ -143,7 +143,7 @@ export class TokensService {
     });
 
     if (!userSession) {
-      throw new UnprocessableEntityException('Refresh token not found');
+      throw new UnprocessableEntityException('Refresh токен не найден');
     }
 
     const addOptions = { userIp, userAgent };
@@ -172,9 +172,13 @@ export class TokensService {
       return this.jwt.verifyAsync(token);
     } catch (e) {
       if (e instanceof TokenExpiredError) {
-        throw new UnprocessableEntityException('Refresh token expired');
+        throw new UnprocessableEntityException(
+          'Истек срок действия refresh токена',
+        );
       } else {
-        throw new UnprocessableEntityException('Refresh token malformed');
+        throw new UnprocessableEntityException(
+          'Refresh токен неверного формате',
+        );
       }
     }
   }
@@ -185,7 +189,7 @@ export class TokensService {
     const subId = payload.sub;
 
     if (!subId) {
-      throw new UnprocessableEntityException('Refresh token malformed');
+      throw new UnprocessableEntityException('Refresh токен неверного формате');
     }
 
     return this.users.getUserById(+subId);
@@ -197,7 +201,7 @@ export class TokensService {
     const tokenId = payload.jti;
 
     if (!tokenId) {
-      throw new UnprocessableEntityException('Refresh token malformed');
+      throw new UnprocessableEntityException('Refresh токен неверного формате');
     }
 
     return this.tokens.findTokenById(tokenId);

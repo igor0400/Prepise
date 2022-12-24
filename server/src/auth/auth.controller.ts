@@ -33,5 +33,3 @@ export class AuthController {
     return this.authService.refresh(request, response);
   }
 }
-
-// СДЕЛАТЬ GUARDS AUTH И ROLES

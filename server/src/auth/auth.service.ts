@@ -24,6 +24,8 @@ export class AuthService {
   ) {
     const userIp = request.ip;
     const userAgent = request.headers['user-agent'];
+    const requestCopy = JSON.parse(JSON.stringify(registerRequest));
+    delete requestCopy.emailVerifyCode;
 
     const isUserCreated = await this.userService.getUserByEmail(
       registerRequest.email,
@@ -33,7 +35,11 @@ export class AuthService {
       throw new UnauthorizedException('Данный email уже используется');
     }
 
-    const user = await this.userService.createUser(registerRequest);
+    // перед созданием пользователя сделать проверку registerRequest.emailVerifyCode
+    const user = await this.userService.createUser({
+      ...requestCopy,
+      emailVerify: true,
+    });
 
     const accessToken = await this.tokensService.generateAccessToken(user);
     const refreshToken = await this.tokensService.generateRefreshToken(
