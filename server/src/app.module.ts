@@ -15,6 +15,7 @@ import { BannedModule } from './banned/banned.module';
 import { BanUser } from './banned/models/banned-users.model';
 import { AuthModule } from './auth/auth.module';
 import { UserInfo } from './users/models/users-info.model';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { UserInfo } from './users/models/users-info.model';
     SessionsModule,
     BannedModule,
     AuthModule,
+    EmailModule,
   ],
   controllers: [SessionsController],
 })
