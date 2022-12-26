@@ -9,7 +9,6 @@ import { UserSession } from './sessions/models/user-session.model';
 import { RolesModule } from './roles/roles.module';
 import { UserRoles } from './roles/models/user-roles.model';
 import { Role } from './roles/models/roles.model';
-import { SessionsController } from './sessions/sessions.controller';
 import { SessionsModule } from './sessions/sessions.module';
 import { BannedModule } from './banned/banned.module';
 import { BanUser } from './banned/models/banned-users.model';
@@ -42,6 +41,5 @@ import { EmailModule } from './email/email.module';
     AuthModule,
     EmailModule,
   ],
-  controllers: [SessionsController],
 })
 export class AppModule {}
