@@ -2,8 +2,9 @@
 /dist
 /node_modules
 
-*.env
+/*.env
 *.todo
+*.rdb
 
 # Logs
 logs

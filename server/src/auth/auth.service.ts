@@ -9,12 +9,14 @@ import {
 import { LoginRequest, RegisterRequest } from './requests';
 import { Response, Request } from 'express';
 import { UserSession } from 'src/sessions/models/user-session.model';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private tokensService: TokensService,
+    private emailService: EmailService,
   ) {}
 
   async register(
@@ -35,7 +37,17 @@ export class AuthService {
       throw new UnauthorizedException('Данный email уже используется');
     }
 
-    // перед созданием пользователя сделать проверку registerRequest.emailVerifyCode
+    const emailVerify = await this.emailService.checkVerifyCode(
+      registerRequest.email,
+      registerRequest.emailVerifyCode,
+    );
+
+    if (!emailVerify) {
+      throw new UnauthorizedException(
+        'Неправильный код проверки email, возможно он устарел',
+      );
+    }
+
     const user = await this.userService.createUser({
       ...requestCopy,
       emailVerify: true,

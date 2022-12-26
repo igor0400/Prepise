@@ -6,7 +6,6 @@ import { hash } from 'bcryptjs';
 import { AddRoleDto } from './dto/add-role.dto';
 import { RolesService } from 'src/roles/roles.service';
 import { UserRoles } from 'src/roles/models/user-roles.model';
-import { CreateUserInfoDto } from './dto/create-user-info.dto';
 import { UserInfo } from './models/users-info.model';
 
 function getRandomNum(max: number): number {
@@ -74,21 +73,6 @@ export class UsersService {
     });
 
     return user;
-  }
-
-  async deleteUserById(id: number) {
-    const isDelete = await this.userRepository.destroy({
-      where: { id },
-    });
-
-    if (isDelete) {
-      return `Пользователь с id: ${id} удален`;
-    } else {
-      throw new HttpException(
-        `Пользователь с id: ${id} не найден`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
   }
 
   async addRole(dto: AddRoleDto) {

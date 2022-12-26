@@ -4,6 +4,7 @@ import { EmailService } from './email.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getMailConfig } from 'src/configs/mail.config';
+import { RedisCacheModule } from 'src/redis/redis.module';
 
 @Module({
   controllers: [EmailController],
@@ -14,6 +15,8 @@ import { getMailConfig } from 'src/configs/mail.config';
       inject: [ConfigService],
       useFactory: getMailConfig,
     }),
+    RedisCacheModule,
   ],
+  exports: [EmailService],
 })
 export class EmailModule {}

@@ -9,6 +9,7 @@ import { User } from '../users/models/user.model';
 import { UserSession } from 'src/sessions/models/user-session.model';
 import { SessionsModule } from 'src/sessions/sessions.module';
 import { ConfigModule } from '@nestjs/config';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   controllers: [AuthController],
@@ -18,7 +19,7 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
     forwardRef(() => UsersModule),
-    SessionsModule,
+
     JwtModule.register({
       secret: process.env.PRIVATE_KEY,
       signOptions: {
@@ -26,6 +27,8 @@ import { ConfigModule } from '@nestjs/config';
       },
     }),
     SequelizeModule.forFeature([User, UserSession]),
+    SessionsModule,
+    EmailModule,
   ],
   exports: [AuthService, TokensService, JwtModule],
 })
