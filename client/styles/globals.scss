@@ -41,3 +41,9 @@ li {
       background: #1ba52269;
    }
 }
+
+@media (max-width: 360px) {
+   .text-4xl {
+      font-size: 30px;
+   }
+}

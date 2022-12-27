@@ -1,20 +1,26 @@
 @import '../../../styles/variables.scss';
 
 .header {
-   height: 80px !important;
-   background: $mainbackground !important;
+   height: 80px;
+   background: $mainbackground;
    border-bottom: 2px solid $line;
    display: flex;
    align-items: center;
    position: fixed;
    width: 100%;
-   z-index: 10000;
+   z-index: 1000;
+   @media (max-width: 640px) {
+      height: 65px;
+   }
 }
 
 .search-input {
    background: #fff;
    width: 700px;
    border-color: $placeholder;
+   @media (max-width: 1500px) {
+      width: 500px;
+   }
    input {
       border-radius: 5px 0 0 5px;
       &::placeholder {

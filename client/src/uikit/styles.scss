@@ -6,4 +6,10 @@
 
 .padding-50 {
    padding-inline: 50px;
+   @media (max-width: 800px) {
+      padding-inline: 25px;
+   }
+   @media (max-width: 425px) {
+      padding-inline: 10px;
+   }
 }
