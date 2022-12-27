@@ -12,6 +12,7 @@ interface UserSessionCreationArgs {
   userId: number;
   userIp: string;
   userAgent: string;
+  expires: Date;
 }
 
 @Table({ tableName: 'USERS_SESSIONS' })

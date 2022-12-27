@@ -55,7 +55,6 @@ export class AuthService {
 
     const accessToken = await this.tokensService.generateAccessToken(user);
     const refreshToken = await this.tokensService.generateRefreshToken(
-      undefined,
       user,
       { userIp, userAgent },
       refreshTokenTime,
@@ -93,18 +92,8 @@ export class AuthService {
         throw new UnauthorizedException('Неверный пароль');
       }
 
-      const userSession = await UserSession.findOne({
-        where: {
-          userId: user.id,
-          userIp,
-          userAgent,
-        },
-        include: { all: true },
-      });
-
       const accessToken = await this.tokensService.generateAccessToken(user);
       const refreshToken = await this.tokensService.generateRefreshToken(
-        userSession,
         user,
         { userIp, userAgent },
         refreshTokenTime,
@@ -129,7 +118,6 @@ export class AuthService {
   }
 
   async refresh(request: Request, response: Response) {
-    console.log(request.cookies);
     const { user, accessToken, refreshToken } =
       await this.tokensService.createTokensFromRefreshToken(
         request.cookies.refreshToken,

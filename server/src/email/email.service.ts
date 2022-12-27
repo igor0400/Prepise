@@ -35,7 +35,6 @@ export class EmailService {
 
   async checkVerifyCode(email: string, code: string): Promise<boolean> {
     const redisCode = await this.redisService.get(email);
-    console.log(redisCode);
 
     if (redisCode === code) {
       await this.redisService.del(email);

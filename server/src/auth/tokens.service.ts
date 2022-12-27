@@ -5,11 +5,11 @@ import { SignOptions, TokenExpiredError } from 'jsonwebtoken';
 import { UserSession } from '../sessions/models/user-session.model';
 
 import { UsersService } from 'src/users/users.service';
-import { SessionsRepository } from '../sessions/session.repository';
 
 import { v4 } from 'uuid';
 import { User } from 'src/users/models/user.model';
 import { InjectModel } from '@nestjs/sequelize';
+import { SessionsService } from 'src/sessions/sessions.service';
 
 export interface RefreshTokenPayload {
   jti: string;
@@ -18,7 +18,7 @@ export interface RefreshTokenPayload {
   userAgent: string;
 }
 
-export interface AddOptionsType {
+export interface UserSessionOptions {
   userIp: string;
   userAgent: string;
 }
@@ -29,79 +29,65 @@ interface CreateTokensType {
   user: User;
 }
 
-interface UserSessionOptions {
-  userIp: string;
-  userAgent: string;
-}
-
 export const refreshTokenTime = 1000 * 60 * 60 * 24 * 60;
 export const refreshTokenTimeCookie = 60 * 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class TokensService {
-  private readonly tokens: SessionsRepository;
-  private readonly users: UsersService;
-  private readonly jwt: JwtService;
-
   public constructor(
-    tokens: SessionsRepository,
-    users: UsersService,
-    jwt: JwtService,
     @InjectModel(UserSession)
     private userSessionRepository: typeof UserSession,
-  ) {
-    this.tokens = tokens;
-    this.users = users;
-    this.jwt = jwt;
-  }
+    private usersService: UsersService,
+    private jwtService: JwtService,
+    private sessionsService: SessionsService,
+  ) {}
 
   public async generateAccessToken(user: User): Promise<string> {
     const opts: SignOptions = {
       subject: user.id.toString(),
     };
 
-    return this.jwt.signAsync({}, opts);
+    return this.jwtService.signAsync({}, opts);
   }
 
   public async generateRefreshToken(
-    userSession: UserSession | undefined,
     user: User,
-    addOptions: AddOptionsType,
+    refreshOpts: UserSessionOptions,
     expiresIn: number,
   ): Promise<string> {
     let token;
-    const { userIp, userAgent } = addOptions;
 
-    const tokenId: string = v4();
+    const userSession = await UserSession.findOne({
+      where: {
+        userId: user.id,
+        ...refreshOpts,
+      },
+      include: { all: true },
+    });
+
     const opts: SignOptions = {
       expiresIn,
       subject: user.id.toString(),
-      jwtid: userSession ? userSession.id.toString() : tokenId,
-    };
-
-    const refreshOpts: UserSessionOptions = {
-      userIp,
-      userAgent,
     };
 
     if (userSession) {
-      token = this.jwt.signAsync(refreshOpts, opts);
+      await this.sessionsService.updateSession(userSession, expiresIn);
 
-      const expiration = new Date();
-      expiration.setTime(expiration.getTime() + expiresIn);
-
-      userSession.expires = expiration;
-      userSession.save();
+      token = this.jwtService.signAsync(refreshOpts, {
+        ...opts,
+        jwtid: userSession.id.toString(),
+      });
     } else {
-      token = this.jwt.signAsync(refreshOpts, opts);
+      const newSession = await this.sessionsService.createSession(
+        user.id,
+        expiresIn,
+        refreshOpts,
+      );
 
-      const addTokenOptions = {
-        userIp,
-        userAgent,
-        tokenId,
-      };
-
-      await this.tokens.createRefreshToken(user, expiresIn, addTokenOptions);
+      token = this.jwtService.signAsync(refreshOpts, {
+        ...opts,
+        jwtid: newSession.id.toString(),
+      });
     }
 
     return token;
@@ -120,7 +106,7 @@ export class TokensService {
     const user = await this.getUserFromRefreshTokenPayload(payload);
 
     if (!user) {
-      throw new UnprocessableEntityException('Refresh токен неверного формате');
+      throw new UnprocessableEntityException('Refresh токен неверного формата');
     }
 
     return { user, token };
@@ -148,20 +134,15 @@ export class TokensService {
 
     const addOptions = { userIp, userAgent };
 
-    const expiration = new Date();
-    expiration.setTime(expiration.getTime() + refreshTokenTime);
-
-    userSession.expires = expiration;
-    userSession.save();
+    this.sessionsService.updateSession(userSession, refreshTokenTime);
 
     const accessToken = await this.generateAccessToken(user);
     const refreshToken = await this.generateRefreshToken(
-      userSession,
       user,
       addOptions,
       refreshTokenTime,
     );
-    
+
     return { user, accessToken, refreshToken };
   }
 
@@ -169,7 +150,7 @@ export class TokensService {
     token: string,
   ): Promise<RefreshTokenPayload> {
     try {
-      return this.jwt.verifyAsync(token);
+      return this.jwtService.verifyAsync(token);
     } catch (e) {
       if (e instanceof TokenExpiredError) {
         throw new UnprocessableEntityException(
@@ -177,7 +158,7 @@ export class TokensService {
         );
       } else {
         throw new UnprocessableEntityException(
-          'Refresh токен неверного формате',
+          'Refresh токен неверного формата',
         );
       }
     }
@@ -189,10 +170,10 @@ export class TokensService {
     const subId = payload.sub;
 
     if (!subId) {
-      throw new UnprocessableEntityException('Refresh токен неверного формате');
+      throw new UnprocessableEntityException('Refresh токен неверного формата');
     }
 
-    return this.users.getUserById(+subId);
+    return this.usersService.getUserById(+subId);
   }
 
   private async getStoredTokenFromRefreshTokenPayload(
@@ -204,6 +185,6 @@ export class TokensService {
       throw new UnprocessableEntityException('Refresh токен неверного формате');
     }
 
-    return this.tokens.findTokenById(tokenId);
+    return this.sessionsService.findSessionById(+tokenId);
   }
 }
