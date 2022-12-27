@@ -25,8 +25,45 @@ export class UsersService {
   ) {}
 
   private readonly defaultAvatars = {
-    male: ['efron.png'],
-    female: ['camilla.png'],
+    male: [
+      'andre.png',
+      'ashton.png',
+      'brad.png',
+      'brini.png',
+      'efron.png',
+      'greggy.png',
+      'greta.png',
+      'lars.png',
+      'marnie.png',
+      'maxim.png',
+      'nicola.png',
+      'paul.png',
+      'pitta.png',
+      'raul.png',
+      'rudiger.png',
+      'sam.png',
+      'theo.png,',
+    ],
+    female: [
+      'babs.png',
+      'camilla.png',
+      'charlotte.png',
+      'clara.png',
+      'elsa.png',
+      'elvira.png',
+      'fini.png',
+      'gene.png',
+      'hanna.png',
+      'laura.png',
+      'leni.png',
+      'ludmilla.png',
+      'luisa.png',
+      'phichi.png',
+      'reana.png',
+      'saskia.png',
+      'serj.png',
+      'tzu-yung.png',
+    ],
   };
 
   async getAllUsers() {
@@ -73,6 +110,22 @@ export class UsersService {
     });
 
     return user;
+  }
+
+  // УБРАТЬ!!!!!!!!!!!!!!!!
+  async deleteUserById(id: number) {
+    const isDelete = await this.userRepository.destroy({
+      where: { id },
+    });
+
+    if (isDelete) {
+      return `Пользователь с id: ${id} удален`;
+    } else {
+      throw new HttpException(
+        `Пользователь с id: ${id} не найден`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
   async addRole(dto: AddRoleDto) {
