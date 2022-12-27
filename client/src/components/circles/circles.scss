@@ -1,16 +1,3 @@
 .background {
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
    background: rgba(247, 248, 250, 0.3);
-}
-
-.orb-canvas {
-   height: calc(100vh - 80px);
-   width: 100vw;
-   @media (max-width: 640px) {
-      height: calc(100vh - 65px);
-   }
 }

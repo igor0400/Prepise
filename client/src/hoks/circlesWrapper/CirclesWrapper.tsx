@@ -7,7 +7,7 @@ interface Props {
 
 const CirclesWrapper: FC<Props> = ({ children }) => {
    return (
-      <div className="circles-wrapper relative">
+      <div className="h-full relative">
          <Circles />
          {children}
       </div>
