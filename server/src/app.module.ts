@@ -15,6 +15,8 @@ import { BanUser } from './banned/models/banned-users.model';
 import { AuthModule } from './auth/auth.module';
 import { UserInfo } from './users/models/users-info.model';
 import { EmailModule } from './email/email.module';
+import { QuestionsModule } from './questions/questions.module';
+import { Question } from './questions/models/question.model';
 
 @Module({
   imports: [
@@ -32,7 +34,7 @@ import { EmailModule } from './email/email.module';
       username: process.env.MYSQL_USERNAME,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DBNAME,
-      models: [User, UserSession, UserRoles, Role, BanUser, UserInfo],
+      models: [User, UserSession, UserRoles, Role, BanUser, UserInfo, Question],
     }),
     UsersModule,
     RolesModule,
@@ -40,6 +42,7 @@ import { EmailModule } from './email/email.module';
     BannedModule,
     AuthModule,
     EmailModule,
+    QuestionsModule,
   ],
 })
 export class AppModule {}

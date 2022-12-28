@@ -8,6 +8,7 @@ import {
   HasOne,
 } from 'sequelize-typescript';
 import { BanUser } from 'src/banned/models/banned-users.model';
+import { Question } from 'src/questions/models/question.model';
 import { Role } from 'src/roles/models/roles.model';
 import { UserRoles } from 'src/roles/models/user-roles.model';
 import { UserSession } from '../../sessions/models/user-session.model';
@@ -101,4 +102,7 @@ export class User extends Model<User, UserCreationArgs> {
 
   @HasOne(() => UserInfo)
   userInfo: UserInfo;
+
+  @HasMany(() => Question)
+  questions: Question[];
 }
