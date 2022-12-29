@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Req } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { QuestionsService } from './questions.service';
+import { CustomReq } from 'src/types/request-type';
 
 @Controller('questions')
 export class QuestionsController {
@@ -11,8 +13,12 @@ export class QuestionsController {
     return this.questionsService.getAllQuestions();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('create/question')
-  createQuestion(@Body() dto: CreateQuestionDto) {
-    return this.questionsService.createQuestion(dto);
+  createQuestion(@Body() dto: CreateQuestionDto, @Req() req: CustomReq) {
+    return this.questionsService.createQuestion({
+      ...dto,
+      authorId: +req.user.sub,
+    });
   }
 }

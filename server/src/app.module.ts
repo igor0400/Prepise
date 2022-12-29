@@ -17,6 +17,9 @@ import { UserInfo } from './users/models/users-info.model';
 import { EmailModule } from './email/email.module';
 import { QuestionsModule } from './questions/questions.module';
 import { Question } from './questions/models/question.model';
+import { QuestionImg } from './questions/models/question-img.model';
+import { QuestionFile } from './questions/models/question-file.model';
+import { DefaultQuestionInfo } from './questions/models/default-question-info.model';
 
 @Module({
   imports: [
@@ -34,7 +37,18 @@ import { Question } from './questions/models/question.model';
       username: process.env.MYSQL_USERNAME,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DBNAME,
-      models: [User, UserSession, UserRoles, Role, BanUser, UserInfo, Question],
+      models: [
+        User,
+        UserSession,
+        UserRoles,
+        Role,
+        BanUser,
+        UserInfo,
+        Question,
+        QuestionImg,
+        QuestionFile,
+        DefaultQuestionInfo,
+      ],
     }),
     UsersModule,
     RolesModule,

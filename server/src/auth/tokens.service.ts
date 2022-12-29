@@ -6,7 +6,6 @@ import { UserSession } from '../sessions/models/user-session.model';
 
 import { UsersService } from 'src/users/users.service';
 
-import { v4 } from 'uuid';
 import { User } from 'src/users/models/user.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { SessionsService } from 'src/sessions/sessions.service';
@@ -55,8 +54,6 @@ export class TokensService {
     refreshOpts: UserSessionOptions,
     expiresIn: number,
   ): Promise<string> {
-    let token;
-
     const userSession = await UserSession.findOne({
       where: {
         userId: user.id,
@@ -73,7 +70,7 @@ export class TokensService {
     if (userSession) {
       await this.sessionsService.updateSession(userSession, expiresIn);
 
-      token = this.jwtService.signAsync(refreshOpts, {
+      return this.jwtService.signAsync(refreshOpts, {
         ...opts,
         jwtid: userSession.id.toString(),
       });
@@ -84,13 +81,11 @@ export class TokensService {
         refreshOpts,
       );
 
-      token = this.jwtService.signAsync(refreshOpts, {
+      return this.jwtService.signAsync(refreshOpts, {
         ...opts,
         jwtid: newSession.id.toString(),
       });
     }
-
-    return token;
   }
 
   public async resolveUserSession(
@@ -130,6 +125,15 @@ export class TokensService {
 
     if (!userSession) {
       throw new UnprocessableEntityException('Refresh токен не найден');
+    }
+
+    if (
+      Date.parse(userSession.expires.toISOString()) <
+      Date.parse(new Date().toISOString())
+    ) {
+      throw new UnprocessableEntityException(
+        'Срок действия refresh токена истек',
+      );
     }
 
     const addOptions = { userIp, userAgent };

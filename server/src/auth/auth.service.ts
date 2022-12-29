@@ -8,7 +8,6 @@ import {
 } from './tokens.service';
 import { LoginRequest, RegisterRequest } from './requests';
 import { Response, Request } from 'express';
-import { UserSession } from 'src/sessions/models/user-session.model';
 import { EmailService } from 'src/email/email.service';
 
 @Injectable()

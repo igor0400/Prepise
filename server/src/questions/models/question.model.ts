@@ -5,8 +5,13 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
+  HasMany,
+  HasOne,
 } from 'sequelize-typescript';
 import { User } from 'src/users/models/user.model';
+import { DefaultQuestionInfo } from './default-question-info.model';
+import { QuestionFile } from './question-file.model';
+import { QuestionImg } from './question-img.model';
 
 interface QuestionCreationArgs {
   authorId: number;
@@ -67,6 +72,15 @@ export class Question extends Model<Question, QuestionCreationArgs> {
     defaultValue: 0,
   })
   dislikes: number;
+
+  @HasOne(() => DefaultQuestionInfo)
+  defaultQuestionInfo: DefaultQuestionInfo;
+
+  @HasMany(() => QuestionImg)
+  imgs: QuestionImg[];
+
+  @HasMany(() => QuestionFile)
+  files: QuestionFile[];
 
   @BelongsTo(() => User)
   user: User;
