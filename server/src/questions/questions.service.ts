@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateImgAndFileDto } from './dto/create-img-file.dto';
+import { CreateQuestionCommentReplyDto } from './dto/create-question-comment-reply.dto';
+import { CreateQuestionCommentDto } from './dto/create-question-comment.dto';
 import { CreateQUUIDto } from './dto/create-question-used-user-info.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { CreateTQRFDto } from './dto/create-test-question-reply-file.dto';
 import { CreateTQRDto } from './dto/create-test-question-reply.dto';
 import { DefaultQuestionInfo } from './models/default-question-info.model';
+import { QuestionCommentReply } from './models/question-comment-reply.model';
+import { QuestionComment } from './models/question-comment.model';
 import { QuestionFile } from './models/question-file.model';
 import { QuestionImg } from './models/question-img.model';
 import { QuestionUsedUserInfo } from './models/question-used-user-info.model';
@@ -33,6 +37,10 @@ export class QuestionsService {
     private testQuestionReplyRepository: typeof TestQuestionReply,
     @InjectModel(TestQuestionReplyFile)
     private testQuestionReplyFileRepository: typeof TestQuestionReplyFile,
+    @InjectModel(QuestionComment)
+    private questionCommentRepository: typeof QuestionComment,
+    @InjectModel(QuestionCommentReply)
+    private questionCommentReplyRepository: typeof QuestionCommentReply,
   ) {}
 
   async getAllQuestions() {
@@ -60,6 +68,16 @@ export class QuestionsService {
     return question;
   }
 
+  async commentQuestion(dto: CreateQuestionCommentDto) {
+    const comment = await this.questionCommentRepository.create(dto);
+    return comment;
+  }
+
+  async replyCommentQuestion(dto: CreateQuestionCommentReplyDto) {
+    const comment = await this.questionCommentReplyRepository.create(dto);
+    return comment;
+  }
+
   async replyTestQuestion(dto: CreateTQRDto) {
     const testQuestionReply = await this.testQuestionReplyRepository.create(
       dto,
@@ -72,22 +90,21 @@ export class QuestionsService {
 
   async viewQuestion(dto: CreateQUUIDto) {
     const info = await this.questionUUIRepository.findOne({
-      where: { questionId: dto.questionId, userId: dto.userId },
+      where: { ...dto },
       include: { all: true },
     });
 
     if (!info) {
-      await this.questionUUIRepository.create(dto);
+      await this.incQuestionViews(dto.questionId);
+      await this.questionUUIRepository.create({ ...dto, view: true });
     }
-
-    await this.incQuestionViews(dto.questionId);
 
     return true;
   }
 
   async doneQuestion(dto: CreateQUUIDto) {
     const info = await this.questionUUIRepository.findOne({
-      where: { questionId: dto.questionId, userId: dto.userId },
+      where: { ...dto },
       include: { all: true },
     });
 
@@ -97,12 +114,12 @@ export class QuestionsService {
         view: true,
         done: true,
       });
+
+      return true;
     }
 
     info.done = true;
-    info.save();
-
-    return true;
+    return info.save();
   }
 
   async getQuestionById(id: number) {

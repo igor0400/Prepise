@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { DefaultQuestionInfo } from './models/default-question-info.model';
+import { QuestionCommentReply } from './models/question-comment-reply.model';
+import { QuestionComment } from './models/question-comment.model';
 import { QuestionFile } from './models/question-file.model';
 import { QuestionImg } from './models/question-img.model';
 import { QuestionUsedUserInfo } from './models/question-used-user-info.model';
@@ -25,6 +27,8 @@ import { QuestionsService } from './questions.service';
       TestQuestionInfo,
       TestQuestionReply,
       TestQuestionReplyFile,
+      QuestionComment,
+      QuestionCommentReply,
     ]),
     JwtModule.register({
       secret: process.env.PRIVATE_KEY,

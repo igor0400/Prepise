@@ -11,8 +11,10 @@ import {
 import { BanQuestion } from 'src/banned/models/banned-questions.model';
 import { User } from 'src/users/models/user.model';
 import { DefaultQuestionInfo } from './default-question-info.model';
+import { QuestionComment } from './question-comment.model';
 import { QuestionFile } from './question-file.model';
 import { QuestionImg } from './question-img.model';
+import { QuestionUsedUserInfo } from './question-used-user-info.model';
 import { TestQuestionInfo } from './test-question-info.model';
 
 interface QuestionCreationArgs {
@@ -95,6 +97,12 @@ export class Question extends Model<Question, QuestionCreationArgs> {
 
   @HasOne(() => BanQuestion)
   banned: BanQuestion;
+
+  @HasMany(() => QuestionUsedUserInfo)
+  usedUserInfo: QuestionUsedUserInfo[];
+
+  @HasMany(() => QuestionComment)
+  comments: QuestionComment[];
 
   @BelongsTo(() => User)
   user: User;

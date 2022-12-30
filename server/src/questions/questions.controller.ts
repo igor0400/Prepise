@@ -12,6 +12,8 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { QuestionsService } from './questions.service';
 import { CustomReq } from 'src/types/request-type';
 import { CreateTQRDto } from './dto/create-test-question-reply.dto';
+import { CreateQuestionCommentDto } from './dto/create-question-comment.dto';
+import { CreateQuestionCommentReplyDto } from './dto/create-question-comment-reply.dto';
 
 @Controller('questions')
 export class QuestionsController {
@@ -46,12 +48,38 @@ export class QuestionsController {
   @UseGuards(JwtAuthGuard)
   @Post('/reply-test-question')
   replyTestQuestion(@Body() dto: CreateTQRDto, @Req() req: CustomReq) {
-    return this.questionsService.replyTestQuestion(
-      {
-        ...dto,
-        authorId: +req.user.sub,
-      },
-    );
+    return this.questionsService.replyTestQuestion({
+      ...dto,
+      authorId: +req.user.sub,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/comment/question/:id')
+  commentQuestion(
+    @Body() dto: CreateQuestionCommentDto,
+    @Param('id') questionId: string,
+    @Req() req: CustomReq,
+  ) {
+    return this.questionsService.commentQuestion({
+      ...dto,
+      authorId: +req.user.sub,
+      questionId: +questionId,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/reply/question-comment/:id')
+  replyCommentQuestion(
+    @Body() dto: CreateQuestionCommentReplyDto,
+    @Param('id') questionCommentId: string,
+    @Req() req: CustomReq,
+  ) {
+    return this.questionsService.replyCommentQuestion({
+      ...dto,
+      authorId: +req.user.sub,
+      questionCommentId: +questionCommentId,
+    });
   }
 
   @UseGuards(JwtAuthGuard)

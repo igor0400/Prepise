@@ -25,6 +25,8 @@ import { QuestionUsedUserInfo } from './questions/models/question-used-user-info
 import { TestQuestionInfo } from './questions/models/test-question-info.model';
 import { TestQuestionReplyFile } from './questions/models/test-question-reply-file.model';
 import { TestQuestionReply } from './questions/models/test-question-reply.model';
+import { QuestionComment } from './questions/models/question-comment.model';
+import { QuestionCommentReply } from './questions/models/question-comment-reply.model';
 
 @Module({
   imports: [
@@ -58,6 +60,8 @@ import { TestQuestionReply } from './questions/models/test-question-reply.model'
         TestQuestionInfo,
         TestQuestionReply,
         TestQuestionReplyFile,
+        QuestionComment,
+        QuestionCommentReply,
       ],
     }),
     UsersModule,
