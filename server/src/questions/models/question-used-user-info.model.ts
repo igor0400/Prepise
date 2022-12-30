@@ -14,6 +14,8 @@ interface QUUICreationArgs {
   userId: number;
   view?: boolean;
   done?: boolean;
+  isLike?: boolean;
+  isDislike?: boolean;
 }
 
 @Table({ tableName: 'QUESTION_USED_USER_INFO' })
@@ -56,6 +58,20 @@ export class QuestionUsedUserInfo extends Model<
     defaultValue: false,
   })
   done: boolean;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: true,
+    defaultValue: false,
+  })
+  isLike: boolean;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: true,
+    defaultValue: false,
+  })
+  isDislike: boolean;
 
   @BelongsTo(() => User)
   user: User;

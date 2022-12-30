@@ -99,4 +99,22 @@ export class QuestionsController {
       questionId: +questionId,
     });
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/like/question/:id')
+  likeQuestion(@Param('id') questionId: string, @Req() req: CustomReq) {
+    this.questionsService.likeQuestion({
+      userId: +req.user.sub,
+      questionId: +questionId,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/dislike/question/:id')
+  dislikeQuestion(@Param('id') questionId: string, @Req() req: CustomReq) {
+    this.questionsService.dislikeQuestion({
+      userId: +req.user.sub,
+      questionId: +questionId,
+    });
+  }
 }

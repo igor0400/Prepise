@@ -95,7 +95,7 @@ export class QuestionsService {
     });
 
     if (!info) {
-      await this.incQuestionViews(dto.questionId);
+      await this.incQuestionParams(dto.questionId, 'viewes');
       await this.questionUUIRepository.create({ ...dto, view: true });
     }
 
@@ -119,6 +119,66 @@ export class QuestionsService {
     }
 
     info.done = true;
+    return info.save();
+  }
+
+  async likeQuestion(dto: CreateQUUIDto) {
+    const info = await this.questionUUIRepository.findOne({
+      where: { ...dto },
+      include: { all: true },
+    });
+
+    if (!info?.isLike) {
+      await this.incQuestionParams(dto.questionId, 'likes');
+    }
+
+    if (info?.isDislike) {
+      await this.decQuestionParams(dto.questionId, 'dislikes');
+    }
+
+    if (!info) {
+      await this.questionUUIRepository.create({
+        ...dto,
+        view: true,
+        isLike: true,
+      });
+      await this.incQuestionParams(dto.questionId, 'viewes');
+
+      return true;
+    }
+
+    info.isLike = true;
+    info.isDislike = false;
+    return info.save();
+  }
+
+  async dislikeQuestion(dto: CreateQUUIDto) {
+    const info = await this.questionUUIRepository.findOne({
+      where: { ...dto },
+      include: { all: true },
+    });
+
+    if (!info?.isDislike) {
+      await this.incQuestionParams(dto.questionId, 'dislikes');
+    }
+
+    if (info?.isLike) {
+      await this.decQuestionParams(dto.questionId, 'likes');
+    }
+
+    if (!info) {
+      await this.questionUUIRepository.create({
+        ...dto,
+        view: true,
+        isDislike: true,
+      });
+      await this.incQuestionParams(dto.questionId, 'viewes');
+
+      return true;
+    }
+
+    info.isDislike = true;
+    info.isLike = false;
     return info.save();
   }
 
@@ -170,13 +230,29 @@ export class QuestionsService {
     return filesArr;
   }
 
-  private async incQuestionViews(questionId: number) {
+  private async incQuestionParams(
+    questionId: number,
+    param: 'likes' | 'dislikes' | 'viewes',
+  ) {
     const question = await this.questionRepository.findOne({
       where: { id: questionId },
       include: { all: true },
     });
 
-    question.viewes = question.viewes + 1;
+    question[param] = question[param] + 1;
+    return question.save();
+  }
+
+  private async decQuestionParams(
+    questionId: number,
+    param: 'likes' | 'dislikes' | 'viewes',
+  ) {
+    const question = await this.questionRepository.findOne({
+      where: { id: questionId },
+      include: { all: true },
+    });
+
+    question[param] = question[param] - 1;
     return question.save();
   }
 }
