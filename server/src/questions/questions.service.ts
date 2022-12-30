@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateImgAndFileDto } from './dto/create-img-file.dto';
+import { CreateQUUIDto } from './dto/create-question-used-user-info.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateTQRFDto } from './dto/create-test-question-reply-file.dto';
+import { CreateTQRDto } from './dto/create-test-question-reply.dto';
 import { DefaultQuestionInfo } from './models/default-question-info.model';
 import { QuestionFile } from './models/question-file.model';
 import { QuestionImg } from './models/question-img.model';
+import { QuestionUsedUserInfo } from './models/question-used-user-info.model';
 import { Question } from './models/question.model';
+import { TestQuestionInfo } from './models/test-question-info.model';
+import { TestQuestionReplyFile } from './models/test-question-reply-file.model';
+import { TestQuestionReply } from './models/test-question-reply.model';
 
 @Injectable()
 export class QuestionsService {
@@ -18,23 +25,90 @@ export class QuestionsService {
     private questionFileRepository: typeof QuestionFile,
     @InjectModel(DefaultQuestionInfo)
     private defaultQuestionInfoRepository: typeof DefaultQuestionInfo,
+    @InjectModel(QuestionUsedUserInfo)
+    private questionUUIRepository: typeof QuestionUsedUserInfo,
+    @InjectModel(TestQuestionInfo)
+    private testQuestionInfoRepository: typeof TestQuestionInfo,
+    @InjectModel(TestQuestionReply)
+    private testQuestionReplyRepository: typeof TestQuestionReply,
+    @InjectModel(TestQuestionReplyFile)
+    private testQuestionReplyFileRepository: typeof TestQuestionReplyFile,
   ) {}
 
   async getAllQuestions() {
     const questions = await this.questionRepository.findAll({
-      include: { all: true },
+      include: { all: true, nested: true },
     });
     return questions;
   }
 
-  async createQuestion(dto: CreateQuestionDto) {
+  async createQuestion(dto: CreateQuestionDto, isTest: boolean = false) {
     const question = await this.questionRepository.create(dto);
 
     if (dto.imgs) this.createImgs(dto.imgs, question.id);
-    if (dto.files) this.createFiles(dto.files, question.id);
-    this.defaultQuestionInfoRepository.create({
-      questionId: question.id,
-      interviewCompany: dto.interviewCompany ?? null,
+    if (dto.files) this.createQFiles(dto.files, question.id);
+
+    if (isTest) {
+      await this.testQuestionInfoRepository.create({ questionId: question.id });
+    } else {
+      await this.defaultQuestionInfoRepository.create({
+        questionId: question.id,
+        interviewCompany: dto.interviewCompany ?? null,
+      });
+    }
+
+    return question;
+  }
+
+  async replyTestQuestion(dto: CreateTQRDto) {
+    const testQuestionReply = await this.testQuestionReplyRepository.create(
+      dto,
+    );
+
+    if (dto.files) this.createTQRFiles(dto.files, testQuestionReply.id);
+
+    return testQuestionReply;
+  }
+
+  async viewQuestion(dto: CreateQUUIDto) {
+    const info = await this.questionUUIRepository.findOne({
+      where: { questionId: dto.questionId, userId: dto.userId },
+      include: { all: true },
+    });
+
+    if (!info) {
+      await this.questionUUIRepository.create(dto);
+    }
+
+    await this.incQuestionViews(dto.questionId);
+
+    return true;
+  }
+
+  async doneQuestion(dto: CreateQUUIDto) {
+    const info = await this.questionUUIRepository.findOne({
+      where: { questionId: dto.questionId, userId: dto.userId },
+      include: { all: true },
+    });
+
+    if (!info) {
+      await this.questionUUIRepository.create({
+        ...dto,
+        view: true,
+        done: true,
+      });
+    }
+
+    info.done = true;
+    info.save();
+
+    return true;
+  }
+
+  async getQuestionById(id: number) {
+    const question = await this.questionRepository.findOne({
+      where: { id },
+      include: { all: true, nested: true },
     });
 
     return question;
@@ -53,7 +127,7 @@ export class QuestionsService {
     return imgsArr;
   }
 
-  private createFiles(files: string[], questionId: number) {
+  private createQFiles(files: string[], questionId: number) {
     const filesArr: CreateImgAndFileDto[] = files.map((file) => ({
       url: file,
       questionId,
@@ -64,5 +138,28 @@ export class QuestionsService {
     });
 
     return filesArr;
+  }
+
+  private createTQRFiles(files: string[], testQuestionReplyId: number) {
+    const filesArr: CreateTQRFDto[] = files.map((file) => ({
+      url: file,
+      testQuestionReplyId,
+    }));
+
+    filesArr.forEach(async (file: CreateTQRFDto) => {
+      await this.testQuestionReplyFileRepository.create(file);
+    });
+
+    return filesArr;
+  }
+
+  private async incQuestionViews(questionId: number) {
+    const question = await this.questionRepository.findOne({
+      where: { id: questionId },
+      include: { all: true },
+    });
+
+    question.viewes = question.viewes + 1;
+    return question.save();
   }
 }

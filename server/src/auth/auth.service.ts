@@ -68,10 +68,7 @@ export class AuthService {
     const currentUser = await this.userService.getUserByEmail(
       registerRequest.email,
     );
-    return {
-      user: currentUser,
-      accessToken,
-    };
+    return { accessToken, user: currentUser };
   }
 
   async login(
@@ -107,10 +104,7 @@ export class AuthService {
       const currentUser = await this.userService.getUserByEmail(
         loginRequest.email,
       );
-      return {
-        user: currentUser,
-        accessToken,
-      };
+      return { accessToken, user: currentUser };
     }
 
     throw new UnauthorizedException('Пользователь с таким email не найден');
@@ -130,9 +124,6 @@ export class AuthService {
       secure: process.env.NODE_ENV === 'production',
     });
 
-    return {
-      user,
-      accessToken,
-    };
+    return { accessToken, user };
   }
 }

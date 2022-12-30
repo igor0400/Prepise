@@ -23,7 +23,7 @@ import { EmailModule } from 'src/email/email.module';
     JwtModule.register({
       secret: process.env.PRIVATE_KEY,
       signOptions: {
-        expiresIn: '5m',
+        expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
     SequelizeModule.forFeature([User, UserSession]),

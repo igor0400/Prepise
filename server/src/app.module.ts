@@ -20,6 +20,11 @@ import { Question } from './questions/models/question.model';
 import { QuestionImg } from './questions/models/question-img.model';
 import { QuestionFile } from './questions/models/question-file.model';
 import { DefaultQuestionInfo } from './questions/models/default-question-info.model';
+import { BanQuestion } from './banned/models/banned-questions.model';
+import { QuestionUsedUserInfo } from './questions/models/question-used-user-info.model';
+import { TestQuestionInfo } from './questions/models/test-question-info.model';
+import { TestQuestionReplyFile } from './questions/models/test-question-reply-file.model';
+import { TestQuestionReply } from './questions/models/test-question-reply.model';
 
 @Module({
   imports: [
@@ -48,6 +53,11 @@ import { DefaultQuestionInfo } from './questions/models/default-question-info.mo
         QuestionImg,
         QuestionFile,
         DefaultQuestionInfo,
+        BanQuestion,
+        QuestionUsedUserInfo,
+        TestQuestionInfo,
+        TestQuestionReply,
+        TestQuestionReplyFile,
       ],
     }),
     UsersModule,

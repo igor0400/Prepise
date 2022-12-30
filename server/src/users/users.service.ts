@@ -67,7 +67,9 @@ export class UsersService {
   };
 
   async getAllUsers() {
-    const users = await this.userRepository.findAll({ include: { all: true } });
+    const users = await this.userRepository.findAll({
+      include: { all: true, nested: true },
+    });
     return users;
   }
 
@@ -98,7 +100,7 @@ export class UsersService {
   async getUserByEmail(email: string) {
     const user = await this.userRepository.findOne({
       where: { email },
-      include: { all: true },
+      include: { all: true, nested: true },
     });
     return user;
   }
@@ -106,7 +108,7 @@ export class UsersService {
   async getUserById(id: number) {
     const user = await this.userRepository.findOne({
       where: { id },
-      include: { all: true },
+      include: { all: true, nested: true },
     });
 
     return user;

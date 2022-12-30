@@ -17,7 +17,7 @@ import { forwardRef } from '@nestjs/common/utils';
     JwtModule.register({
       secret: process.env.PRIVATE_KEY,
       signOptions: {
-        expiresIn: '5m',
+        expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
     forwardRef(() => UsersModule),

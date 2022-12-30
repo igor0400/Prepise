@@ -4,7 +4,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { DefaultQuestionInfo } from './models/default-question-info.model';
 import { QuestionFile } from './models/question-file.model';
 import { QuestionImg } from './models/question-img.model';
+import { QuestionUsedUserInfo } from './models/question-used-user-info.model';
 import { Question } from './models/question.model';
+import { TestQuestionInfo } from './models/test-question-info.model';
+import { TestQuestionReplyFile } from './models/test-question-reply-file.model';
+import { TestQuestionReply } from './models/test-question-reply.model';
 import { QuestionsController } from './questions.controller';
 import { QuestionsService } from './questions.service';
 
@@ -17,11 +21,15 @@ import { QuestionsService } from './questions.service';
       QuestionImg,
       QuestionFile,
       DefaultQuestionInfo,
+      QuestionUsedUserInfo,
+      TestQuestionInfo,
+      TestQuestionReply,
+      TestQuestionReplyFile,
     ]),
     JwtModule.register({
       secret: process.env.PRIVATE_KEY,
       signOptions: {
-        expiresIn: '5m',
+        expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
   ],
