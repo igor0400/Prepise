@@ -70,11 +70,11 @@ export class FilesService {
   }
 
   private checkFileSize(file: Express.Multer.File) {
-    const fileSize = +process.env.FILES_MAX_MB_SIZE * 1024 * 1024 * 8;
+    const fileSize = +process.env.FILES_MAX_SIZE_IN_MB * 1024 * 1024 * 8;
 
     if (file.size > fileSize) {
       throw new HttpException(
-        `Размер файла превышает ${process.env.FILES_MAX_MB_SIZE}МБ`,
+        `Размер файла превышает ${process.env.FILES_MAX_SIZE_IN_MB}МБ`,
         HttpStatus.BAD_REQUEST,
       );
     }

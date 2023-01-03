@@ -62,7 +62,6 @@ export class AuthService {
     response.cookie('refreshToken', refreshToken, {
       maxAge: refreshTokenTimeCookie,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
     });
 
     const currentUser = await this.userService.getUserByEmail(
@@ -98,7 +97,6 @@ export class AuthService {
       response.cookie('refreshToken', refreshToken, {
         maxAge: refreshTokenTimeCookie,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
       });
 
       const currentUser = await this.userService.getUserByEmail(
@@ -121,7 +119,6 @@ export class AuthService {
     response.cookie('refreshToken', refreshToken, {
       maxAge: refreshTokenTimeCookie,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
     });
 
     return { accessToken, user };
