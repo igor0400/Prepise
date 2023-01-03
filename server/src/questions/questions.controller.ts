@@ -6,6 +6,8 @@ import {
   UseGuards,
   Req,
   Param,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -14,6 +16,15 @@ import { CustomReq } from 'src/types/request-type';
 import { CreateTQRDto } from './dto/create-test-question-reply.dto';
 import { CreateQuestionCommentDto } from './dto/create-question-comment.dto';
 import { CreateQuestionCommentReplyDto } from './dto/create-question-comment-reply.dto';
+import {
+  FileFieldsInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
+
+export interface Files {
+  image: Express.Multer.File[];
+  file?: Express.Multer.File[];
+}
 
 @Controller('questions')
 export class QuestionsController {
@@ -26,32 +37,64 @@ export class QuestionsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('create/question')
-  createQuestion(@Body() dto: CreateQuestionDto, @Req() req: CustomReq) {
-    return this.questionsService.createQuestion({
-      ...dto,
-      authorId: +req.user.sub,
-    });
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('create/test-question')
-  createTestQuestion(@Body() dto: CreateQuestionDto, @Req() req: CustomReq) {
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 10 },
+      { name: 'file', maxCount: 10 },
+    ]),
+  )
+  async createQuestion(
+    @Body() dto: CreateQuestionDto,
+    @Req() req: CustomReq,
+    @UploadedFiles() files: Files,
+  ) {
     return this.questionsService.createQuestion(
       {
         ...dto,
         authorId: +req.user.sub,
       },
+      files,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('create/test-question')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 10 },
+      { name: 'file', maxCount: 10 },
+    ]),
+  )
+  createTestQuestion(
+    @Body() dto: CreateQuestionDto,
+    @Req() req: CustomReq,
+    @UploadedFiles() files: Files,
+  ) {
+    return this.questionsService.createQuestion(
+      {
+        ...dto,
+        authorId: +req.user.sub,
+      },
+      files,
       true,
     );
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/reply-test-question')
-  replyTestQuestion(@Body() dto: CreateTQRDto, @Req() req: CustomReq) {
-    return this.questionsService.replyTestQuestion({
-      ...dto,
-      authorId: +req.user.sub,
-    });
+  @Post('/reply/test-question')
+  @UseInterceptors(FilesInterceptor('file'))
+  replyTestQuestion(
+    @Body() dto: CreateTQRDto,
+    @Req() req: CustomReq,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.questionsService.replyTestQuestion(
+      {
+        ...dto,
+        authorId: +req.user.sub,
+      },
+      files,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

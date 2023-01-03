@@ -5,6 +5,4 @@ export class CreateQuestionDto {
   readonly commented?: boolean;
   readonly interviewPosition?: boolean;
   readonly interviewCompany?: string;
-  readonly imgs?: string[];
-  readonly files?: string[];
 }

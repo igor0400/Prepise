@@ -27,6 +27,7 @@ import { TestQuestionReplyFile } from './questions/models/test-question-reply-fi
 import { TestQuestionReply } from './questions/models/test-question-reply.model';
 import { QuestionComment } from './questions/models/question-comment.model';
 import { QuestionCommentReply } from './questions/models/question-comment-reply.model';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { QuestionCommentReply } from './questions/models/question-comment-reply.
     AuthModule,
     EmailModule,
     QuestionsModule,
+    FilesModule,
   ],
 })
 export class AppModule {}

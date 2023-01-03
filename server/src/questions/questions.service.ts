@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { FilesService } from 'src/files/files.service';
 import { CreateImgAndFileDto } from './dto/create-img-file.dto';
 import { CreateQuestionCommentReplyDto } from './dto/create-question-comment-reply.dto';
 import { CreateQuestionCommentDto } from './dto/create-question-comment.dto';
@@ -17,6 +18,7 @@ import { Question } from './models/question.model';
 import { TestQuestionInfo } from './models/test-question-info.model';
 import { TestQuestionReplyFile } from './models/test-question-reply-file.model';
 import { TestQuestionReply } from './models/test-question-reply.model';
+import { Files } from './questions.controller';
 
 @Injectable()
 export class QuestionsService {
@@ -41,6 +43,7 @@ export class QuestionsService {
     private questionCommentRepository: typeof QuestionComment,
     @InjectModel(QuestionCommentReply)
     private questionCommentReplyRepository: typeof QuestionCommentReply,
+    private filesService: FilesService,
   ) {}
 
   async getAllQuestions() {
@@ -50,11 +53,19 @@ export class QuestionsService {
     return questions;
   }
 
-  async createQuestion(dto: CreateQuestionDto, isTest: boolean = false) {
+  async createQuestion(
+    dto: CreateQuestionDto,
+    takenFiles: Files,
+    isTest: boolean = false,
+  ) {
     const question = await this.questionRepository.create(dto);
+    const { files, images } = this.filesService.createImgsAndFiles(
+      takenFiles,
+      `questions/${question.id}`,
+    );
 
-    if (dto.imgs) this.createImgs(dto.imgs, question.id);
-    if (dto.files) this.createQFiles(dto.files, question.id);
+    if (images.length) this.createImgs(images, question.id);
+    if (files.length) this.createQFiles(files, question.id);
 
     if (isTest) {
       await this.testQuestionInfoRepository.create({ questionId: question.id });
@@ -78,12 +89,16 @@ export class QuestionsService {
     return comment;
   }
 
-  async replyTestQuestion(dto: CreateTQRDto) {
+  async replyTestQuestion(dto: CreateTQRDto, takenFiles: Express.Multer.File[]) {
     const testQuestionReply = await this.testQuestionReplyRepository.create(
       dto,
     );
+    const files = this.filesService.createFiles(
+      takenFiles,
+      `test-question-replies/${testQuestionReply.id}`,
+    );
 
-    if (dto.files) this.createTQRFiles(dto.files, testQuestionReply.id);
+    if (files.length) this.createTQRFiles(files, testQuestionReply.id);
 
     return testQuestionReply;
   }

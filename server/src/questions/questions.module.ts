@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { FilesModule } from 'src/files/files.module';
 import { DefaultQuestionInfo } from './models/default-question-info.model';
 import { QuestionCommentReply } from './models/question-comment-reply.model';
 import { QuestionComment } from './models/question-comment.model';
@@ -36,6 +37,7 @@ import { QuestionsService } from './questions.service';
         expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
+    FilesModule,
   ],
 })
 export class QuestionsModule {}
