@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  client:
+    build: ./client
+    container_name: "prepise-client"
+    image: igor0400/prepise-client
+    ports:
+      - "3000:3000"
+
+  server:
+    build: ./server
+    container_name: "prepise-back"
+    image: igor0400/prepise-back
+
+    ports:
+      - "8080:8080"
+
+    links:
+      - redis:redis
+
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=production
+
+    volumes:
+      - "C:/Users/ulano/Desktop/Site/fullstack/Prepise/app/server:/app"
+
+  redis:
+    container_name: "redis"
+    image: redis:latest
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - "C:/Users/ulano/Desktop/Site/fullstack/Prepise/app/server:/data"
