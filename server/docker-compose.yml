@@ -18,7 +18,7 @@ services:
       - NODE_ENV=production
 
     volumes:
-      - 'C:/Users/ulano/Desktop/Site/fullstack/Prepise/app/server:/app'
+      - 'D:/Site/fullStack/Prepise/app/server:/app'
 
   redis:
     container_name: 'redis'
@@ -28,4 +28,6 @@ services:
       - '6379:6379'
 
     volumes:
-      - 'C:/Users/ulano/Desktop/Site/fullstack/Prepise/app/server:/data'
+      - 'D:/Site/fullStack/Prepise/app/server:/data'
+
+    command: ['redis-server', '--bind', 'redis', '--port', '6379']
