@@ -20,6 +20,7 @@ export class UserInfo extends Model<UserInfo, UserInfoCreationArgs> {
     unique: true,
     primaryKey: true,
     autoIncrement: true,
+    allowNull: false,
   })
   id: number;
 

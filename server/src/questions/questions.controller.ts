@@ -8,6 +8,7 @@ import {
   Param,
   UploadedFiles,
   UseInterceptors,
+  Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -78,6 +79,12 @@ export class QuestionsController {
       files,
       true,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/delete/question/:id')
+  deleteQuestion(@Param('id') questionId: string, @Req() req: CustomReq) {
+    return this.questionsService.deleteQuestion(+questionId, req);
   }
 
   @UseGuards(JwtAuthGuard)

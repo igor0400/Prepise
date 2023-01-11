@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { BanQuestion } from 'src/banned/models/banned-questions.model';
 import { FilesService } from 'src/files/files.service';
+import { CustomReq } from 'src/types/request-type';
 import { CreateImgAndFileDto } from './dto/create-img-file.dto';
 import { CreateQuestionCommentReplyDto } from './dto/create-question-comment-reply.dto';
 import { CreateQuestionCommentDto } from './dto/create-question-comment.dto';
@@ -43,6 +45,8 @@ export class QuestionsService {
     private questionCommentRepository: typeof QuestionComment,
     @InjectModel(QuestionCommentReply)
     private questionCommentReplyRepository: typeof QuestionCommentReply,
+    @InjectModel(BanQuestion)
+    private banQuestionRepository: typeof BanQuestion,
     private filesService: FilesService,
   ) {}
 
@@ -79,6 +83,78 @@ export class QuestionsService {
     return question;
   }
 
+  async deleteQuestion(id: number, req: CustomReq) {
+    const question = await this.questionRepository.findOne({
+      where: { id },
+    });
+
+    if (!question) {
+      throw new HttpException(
+        `Вопрос с id: ${id} не найден`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (question.authorId !== +req.user.sub) {
+      throw new HttpException('У вас недостаточно прав', HttpStatus.FORBIDDEN);
+    }
+
+    const comment = await this.questionCommentRepository.findOne({
+      where: { questionId: id },
+    });
+    const testInfo = await this.testQuestionInfoRepository.findOne({
+      where: { questionId: id },
+    });
+    const imgs = await this.questionImgRepository.findAll({
+      where: { questionId: id },
+      include: { all: true },
+    });
+    const files = await this.questionFileRepository.findAll({
+      where: { questionId: id },
+      include: { all: true },
+    });
+
+    if (imgs || files) {
+      this.filesService.deleteQuestionFiles(id);
+    }
+
+    await this.questionImgRepository.destroy({ where: { questionId: id } });
+    await this.questionFileRepository.destroy({ where: { questionId: id } });
+    await this.defaultQuestionInfoRepository.destroy({
+      where: { questionId: id },
+    });
+    await this.questionUUIRepository.destroy({ where: { questionId: id } });
+    await this.banQuestionRepository.destroy({ where: { questionId: id } });
+    await this.testQuestionInfoRepository.destroy({
+      where: { questionId: id },
+    });
+    await this.questionCommentRepository.destroy({
+      where: { questionId: id },
+    });
+
+    if (comment) {
+      await this.questionCommentReplyRepository.destroy({
+        where: { questionCommentId: comment.id },
+      });
+    }
+
+    if (testInfo) {
+      await this.testQuestionReplyRepository.destroy({
+        where: { testQuestionInfoId: testInfo.id },
+      });
+      const testReply = await this.testQuestionReplyRepository.findOne({
+        where: { testQuestionInfoId: testInfo.id },
+      });
+      if (testReply) {
+        await this.testQuestionReplyFileRepository.destroy({
+          where: { testQuestionReplyId: testReply.id },
+        });
+      }
+    }
+
+    return `Вопрос с id: ${id} удален`;
+  }
+
   async commentQuestion(dto: CreateQuestionCommentDto) {
     const comment = await this.questionCommentRepository.create(dto);
     return comment;
@@ -89,7 +165,10 @@ export class QuestionsService {
     return comment;
   }
 
-  async replyTestQuestion(dto: CreateTQRDto, takenFiles: Express.Multer.File[]) {
+  async replyTestQuestion(
+    dto: CreateTQRDto,
+    takenFiles: Express.Multer.File[],
+  ) {
     const testQuestionReply = await this.testQuestionReplyRepository.create(
       dto,
     );

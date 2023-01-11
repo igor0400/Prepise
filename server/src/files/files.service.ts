@@ -6,6 +6,8 @@ import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class FilesService {
+  defaultPath = '../../static';
+
   createImgsAndFiles(files: Files, folderPath: string) {
     if (!files) return;
 
@@ -69,6 +71,38 @@ export class FilesService {
     return returnedFiles;
   }
 
+  deleteQuestionFiles(questionId: number) {
+    const fileResolvePath = this.defaultPath + `/questions/${questionId}`;
+    fs.rmdir(
+      path.resolve(__dirname, fileResolvePath),
+      { recursive: true },
+      (error) => {
+        if (error) {
+          console.log(error);
+          throw new HttpException(
+            `Ошибка удаления файлов: ${JSON.stringify(error)}`,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+        return 'Файлы удалены';
+      },
+    );
+  }
+
+  deleteFile(src: string) {
+    try {
+      const fileResolvePath = this.defaultPath + src;
+      fs.unlinkSync(path.resolve(__dirname, fileResolvePath));
+      return 'Файл удален';
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        `Ошибка удаления файла: ${JSON.stringify(error)}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   private checkFileSize(file: Express.Multer.File) {
     const fileSize = +process.env.FILES_MAX_SIZE_IN_MB * 1024 * 1024 * 8;
 
@@ -92,7 +126,7 @@ export class FilesService {
       const fileLocalLocation = `/${folderPath}/${
         type === 'image' ? 'images' : 'files'
       }`;
-      const fileResolvePath = `../../static${fileLocalLocation}`;
+      const fileResolvePath = this.defaultPath + fileLocalLocation;
       const filePath = path.resolve(__dirname, fileResolvePath);
 
       if (!fs.existsSync(filePath)) {

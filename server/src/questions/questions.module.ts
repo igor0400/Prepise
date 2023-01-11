@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { BanQuestion } from 'src/banned/models/banned-questions.model';
 import { FilesModule } from 'src/files/files.module';
 import { DefaultQuestionInfo } from './models/default-question-info.model';
 import { QuestionCommentReply } from './models/question-comment-reply.model';
@@ -30,6 +31,7 @@ import { QuestionsService } from './questions.service';
       TestQuestionReplyFile,
       QuestionComment,
       QuestionCommentReply,
+      BanQuestion,
     ]),
     JwtModule.register({
       secret: process.env.PRIVATE_KEY,

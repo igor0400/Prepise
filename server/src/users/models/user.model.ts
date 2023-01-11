@@ -29,6 +29,7 @@ export class User extends Model<User, UserCreationArgs> {
     unique: true,
     primaryKey: true,
     autoIncrement: true,
+    allowNull: false,
   })
   id: number;
 
@@ -58,7 +59,7 @@ export class User extends Model<User, UserCreationArgs> {
   emailVerify: boolean;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.TEXT,
   })
   description: string;
 

@@ -45,7 +45,7 @@ export class TestQuestionReply extends Model<
   authorId: number;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.TEXT,
     allowNull: false,
   })
   text: string;

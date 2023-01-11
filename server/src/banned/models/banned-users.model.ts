@@ -24,7 +24,7 @@ export class BanUser extends Model<BanUser, BanUserCreationArgs> {
   id: number;
 
   @ForeignKey(() => User)
-  @Column({ type: DataType.NUMBER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   userId: number;
 
   @Column({ type: DataType.STRING, allowNull: false })

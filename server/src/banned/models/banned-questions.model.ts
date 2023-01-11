@@ -24,7 +24,7 @@ export class BanQuestion extends Model<BanQuestion, BanQuestionCreationArgs> {
   id: number;
 
   @ForeignKey(() => Question)
-  @Column({ type: DataType.NUMBER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   questionId: number;
 
   @Column({ type: DataType.STRING, allowNull: false })

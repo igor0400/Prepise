@@ -60,7 +60,7 @@ export class Question extends Model<Question, QuestionCreationArgs> {
   interviewPosition: boolean;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.TEXT,
     allowNull: false,
   })
   description: string;
